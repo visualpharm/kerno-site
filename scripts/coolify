@@ -1,0 +1,6 @@
+#!/bin/bash
+# usage: coolify METHOD PATH [json-body]   (token from 1P, never in argv)
+H=$(mktemp); chmod 600 $H
+printf 'Authorization: Bearer %s\n' "$(~/.claude/bin/opx item get n34dobf3djknw47qhx3qbewjvi --vault AI --format json 2>/dev/null | python3 -c "import json,sys;d=json.load(sys.stdin);print([f['value'] for f in d['fields'] if f.get('type')=='CONCEALED' and f.get('value')][0])")" > $H
+if [ -n "$3" ]; then curl -s -X "$1" -H @$H -H 'Content-Type: application/json' "https://coolify.brieflysites.com/api/v1$2" -d "$3"; else curl -s -X "$1" -H @$H "https://coolify.brieflysites.com/api/v1$2"; fi
+rm -f $H
